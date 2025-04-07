@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>未来战机</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #64ffda;
+            --bg-dark: #0a192f;
+            --text-light: #a8b2d1;
+            --accent-color: #ff6347;
+            --glow-effect: 0 0 20px rgba(100,255,218,0.3);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, var(--bg-dark), #000);
+            color: var(--primary-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 背景特效 */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            animation: twinkle var(--duration) linear infinite;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* 动态背景光效 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 50% 50%, rgba(100,255,218,0.1) 0%, transparent 50%),
+                linear-gradient(0deg, rgba(10,25,47,0.9) 0%, transparent 100%);
+            z-index: -1;
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+
+        /* 游戏容器 */
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+        }
+
+        /* 主菜单 */
+        #gameMenu {
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(10,25,47,0.8);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(100,255,218,0.3);
+            box-shadow: var(--glow-effect);
+            backdrop-filter: blur(10px);
+            width: 100%;
+            max-width: 600px;
+            transition: transform 0.3s ease;
+        }
+        
+        #gameMenu:hover {
+            transform: translateY(-5px);
+        }
+
+        /* 标题效果 */
+        h1 {
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 0 0 15px rgba(100,255,218,0.5);
+            position: relative;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: var(--primary-color);
+            box-shadow: var(--glow-effect);
+        }
+
+        /* 游戏画布 */
+        canvas {
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            display: block;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.7);
+            box-shadow: var(--glow-effect);
+            transition: all 0.3s ease;
+        }
+        
+        canvas:hover {
+            box-shadow: 0 0 30px rgba(100,255,218,0.5);
+        }
+
+        /* 按钮样式 */
+        #startButton {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            padding: 15px 50px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 30px 0;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--glow-effect);
+        }
+
+        #startButton:hover {
+            background: rgba(100,255,218,0.1);
+            box-shadow: 0 0 25px rgba(100,255,218,0.5);
+            transform: translateY(-3px);
+        }
+
+        #startButton::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -100%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                transparent,
+                rgba(100,255,218,0.1),
+                transparent
+            );
+            transform: rotate(45deg);
+            transition: 0.5s;
+        }
+
+        #startButton:hover::after {
+            left: 100%;
+        }
+
+        /* 游戏说明 */
+        .instructions {
+            max-width: 480px;
+            margin: 20px auto;
+            padding: 25px;
+            background: rgba(10,25,47,0.6);
+            border-radius: 10px;
+            border: 1px solid rgba(100,255,218,0.2);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+        
+        .instructions:hover {
+            box-shadow: 0 0 15px rgba(100,255,218,0.2);
+        }
+
+        .instructions h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px rgba(100,255,218,0.5);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .instructions h2::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-color);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+        
+        .instructions:hover h2::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .instructions ul {
+            text-align: left;
+            line-height: 1.8;
+            color: var(--text-light);
+        }
+
+        .instructions li {
+            margin-bottom: 12px;
+            position: relative;
+            padding-left: 25px;
+            transition: transform 0.2s ease;
+        }
+        
+        .instructions li:hover {
+            transform: translateX(5px);
+            color: var(--primary-color);
+        }
+
+        .instructions li::before {
+            content: '›';
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+        
+        /* 内部列表样式 */
+        .instructions li ul {
+            margin-top: 10px;
+        }
+        
+        .instructions li li {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        /* 移动控制 */
+        #mobileControls {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 20px;
+            background: rgba(10,25,47,0.7);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(100,255,218,0.2);
+            z-index: 100;
+        }
+
+        #mobileControls button {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-color);
+            background: rgba(100,255,218,0.05);
+            color: var(--primary-color);
+            font-size: 24px;
+            touch-action: manipulation;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(100,255,218,0.2);
+        }
+
+        #mobileControls button:active {
+            transform: scale(0.9);
+            background: rgba(100,255,218,0.2);
+            box-shadow: 0 0 25px rgba(100,255,218,0.4);
+        }
+
+        #shootBtn {
+            background: rgba(255,99,71,0.1) !important;
+            border-color: var(--accent-color) !important;
+            color: var(--accent-color) !important;
+        }
+        
+        #shootBtn:active {
+            background: rgba(255,99,71,0.2) !important;
+            box-shadow: 0 0 25px rgba(255,99,71,0.4) !important;
+        }
+
+        /* 装饰性元素 */
+        .tech-border {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 2px solid var(--primary-color);
+            opacity: 0.7;
+            z-index: -1;
+            transition: all 0.5s ease;
+        }
+        
+        .tech-border-tl { 
+            top: 20px; 
+            left: 20px; 
+            border-right: none; 
+            border-bottom: none; 
+        }
+        
+        .tech-border-tr { 
+            top: 20px; 
+            right: 20px; 
+            border-left: none; 
+            border-bottom: none; 
+        }
+        
+        .tech-border-bl { 
+            bottom: 20px; 
+            left: 20px; 
+            border-right: none; 
+            border-top: none; 
+        }
+        
+        .tech-border-br { 
+            bottom: 20px; 
+            right: 20px; 
+            border-left: none; 
+            border-top: none; 
+        }
+        
+        body:hover .tech-border-tl { 
+            transform: translate(5px, 5px); 
+        }
+        
+        body:hover .tech-border-tr { 
+            transform: translate(-5px, 5px); 
+        }
+        
+        body:hover .tech-border-bl { 
+            transform: translate(5px, -5px); 
+        }
+        
+        body:hover .tech-border-br { 
+            transform: translate(-5px, -5px); 
+        }
+
+        /* 声音控制 */
+        .sound-control {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(10,25,47,0.6);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 1px solid rgba(100,255,218,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .sound-control:hover {
+            transform: scale(1.1);
+            background: rgba(10,25,47,0.8);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .keyboard-controls {
+                display: none;
+            }
+            
+            .game-container {
+                padding: 10px;
+            }
+            
+            canvas {
+                width: 100%;
+                max-width: 480px;
+                height: auto;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            #mobileControls {
+                padding: 15px 10px;
+            }
+            
+            #mobileControls button {
+                width: 60px;
+                height: 60px;
+                font-size: 20px;
+            }
+            
+            .instructions {
+                padding: 15px;
+            }
+            
+            .tech-border {
+                width: 20px;
+                height: 20px;
+            }
+        }
+
+        /* 游戏状态 UI */
+        .game-ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: none;
+            background: rgba(10,25,47,0.6);
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(100,255,218,0.2);
+            z-index: 10;
+        }
+        
+        .game-stat {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        /* 加载动画 */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(100,255,218,0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载动画 -->
+    <div class="loader">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- 星空背景 -->
+    <div class="stars" id="stars"></div>
+    
+    <!-- 装饰性边角 -->
+    <div class="tech-border tech-border-tl"></div>
+    <div class="tech-border tech-border-tr"></div>
+    <div class="tech-border tech-border-bl"></div>
+    <div class="tech-border tech-border-br"></div>
+    
+    <!-- 声音控制 -->
+    <div class="sound-control" id="soundToggle">🔊</div>
+
+    <div class="game-container">
+        <!-- 游戏菜单 -->
+        <div id="gameMenu">
+            <h1>未来战机</h1>
+            <div class="instructions">
+                <h2>游戏说明</h2>
+                <ul>
+                    <li class="keyboard-controls">电脑：方向键移动，空格发射</li>
+                    <li class="mobile-controls">手机：触屏按钮控制</li>
+                    <li>收集神兽获得特殊能力：
+                        <ul>
+                            <li>🐦 凤凰：无敌状态</li>
+                            <li>🐲 神龙：清屏攻击</li>
+                            <li>🐢 神龟：恢复生命</li>
+                            <li>🐯 猛虎：双倍分数</li>
+                            <li>🦅 飞鸟：连发子弹</li>
+                            <li>🐉 青龙：双管炮发射</li>
+                        </ul>
+                    </li>
+                    <li>技能使用：
+                        <ul>
+                            <li>B键：炸弹(💣)</li>
+                            <li>V键：减速(⌛)</li>
+                            <li>C键：护盾(🛡️)</li>
+                            <li>X键：双管炮(🔫)</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <button id="startButton">开始游戏</button>
+        </div>
+        
+        <!-- 游戏画布 -->
+        <canvas id="gameCanvas" width="480" height="640"></canvas>
+        
+        <!-- 游戏状态UI -->
+        <div class="game-ui" id="gameUI">
+            <div class="game-stat" id="scoreDisplay">分数: 0</div>
+            <div class="game-stat" id="livesDisplay">生命: 3</div>
+            <div class="game-stat" id="levelDisplay">等级: 1</div>
+        </div>
+    </div>
+    
+    <!-- 资源预加载 -->
+    <div id="resources" style="display: none;">
+        <audio id="shootSound" src="sounds/shoot.mp3"></audio>
+        <audio id="explosionSound" src="sounds/explosion.mp3"></audio>
+        <audio id="bgmSound" src="sounds/bgm.mp3" loop></audio>
+    </div>
+
+    <!-- 移动控制 -->
+    <div id="mobileControls" style="display: none;">
+        <button id="leftBtn">←</button>
+        <button id="shootBtn">发射</button>
+        <button id="rightBtn">→</button>
+    </div>
+
+    <!-- 游戏脚本 -->
+    <script>
+        // 创建星空背景
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const starsCount = window.innerWidth > 768 ? 150 : 80;
+            
+            for (let i = 0; i < starsCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // 随机大小
+                const size = Math.random() * 3 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                // 随机位置
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                
+                // 随机动画持续时间
+                const duration = Math.random() * 5 + 3;
+                star.style.setProperty('--duration', `${duration}s`);
+                
+                // 随机延迟
+                star.style.animationDelay = `${Math.random() * 5}s`;
+                
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            createStars();
+            
+            setTimeout(() => {
+                document.querySelector('.loader').classList.add('hidden');
+            }, 1500);
+        });
+        
+        // 声音控制
+        const soundToggle = document.getElementById('soundToggle');
+        let soundEnabled = true;
+        
+        soundToggle.addEventListener('click', () => {
+            soundEnabled = !soundEnabled;
+            soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
+            
+            // 控制所有音频元素
+            const audios = document.querySelectorAll('audio');
+            audios.forEach(audio => {
+                if (soundEnabled) {
+                    audio.muted = false;
+                } else {
+                    audio.muted = true;
+                }
+            });
+        });
+        
+        // 游戏UI显示
+        document.getElementById('startButton').addEventListener('click', () => {
+            document.getElementById('gameUI').style.display = 'block';
+        });
+    </script>
+    
+    <!-- 奖励系统脚本 -->
+    <script src="js/rewards.js"></script>
+    
+    <!-- 主游戏脚本 -->
+    <script src="js/game.js"></script>
+</body>
+</html> 
