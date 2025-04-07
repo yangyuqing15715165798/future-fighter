@@ -115,4 +115,80 @@
 - JavaScript
 - Canvas API
 - Web Audio API
-- LocalStorage API 
+- LocalStorage API
+
+## 游戏部署指南
+
+### 使用GitHub Pages部署游戏
+
+#### 1. 创建GitHub账号
+1. 访问 [GitHub](https://github.com/)
+2. 点击右上角的"Sign up"按钮
+3. 填写用户名、邮箱和密码
+4. 完成验证步骤
+
+#### 2. 创建新仓库
+1. 登录GitHub账号后，点击右上角的"+"图标，选择"New repository"
+2. 仓库名称填写"future-fighter"或您喜欢的名称
+3. 描述可选填写"HTML5飞机射击游戏"
+4. 保持仓库为"Public"（公开）
+5. 点击"Create repository"按钮
+
+#### 3. 上传游戏文件
+**方法一：通过浏览器上传**
+1. 在新建的仓库页面，点击"uploading an existing file"链接
+2. 将您的游戏文件（包括index.html、js文件夹、images文件夹、sounds文件夹等）拖拽到上传区域
+3. 填写提交信息，如"Initial game files upload"
+4. 点击"Commit changes"按钮
+
+**方法二：使用Git命令行**
+1. 安装Git：从[Git官网](https://git-scm.com/downloads)下载并安装
+2. 打开命令行终端（Windows用PowerShell或CMD，Mac用Terminal）
+3. 在游戏文件夹中初始化Git仓库：
+   ```
+   cd 游戏文件夹路径
+   git init
+   git add .
+   git commit -m "Initial game files upload"
+   ```
+4. 连接到GitHub仓库：
+   ```
+   git remote add origin https://github.com/您的用户名/future-fighter.git
+   git branch -M main
+   git push -u origin main
+   ```
+
+#### 4. 启用GitHub Pages
+1. 上传完成后，在仓库页面点击上方的"Settings"选项卡
+2. 在左侧菜单中找到并点击"Pages"
+3. 在"Build and deployment"部分下：
+   - Source处选择"Deploy from a branch"
+   - Branch下拉菜单中选择"main"
+   - 文件夹选择"/ (root)"
+4. 点击"Save"按钮
+5. 等待几分钟，GitHub会处理您的请求并部署网站
+6. 部署完成后，您可以通过以下地址访问游戏：`https://您的用户名.github.io/future-fighter/`
+
+#### 5. 解决常见问题
+如果"Save"按钮无法点击或其他部署问题：
+1. **刷新页面**：有时候简单刷新页面可以解决问题
+2. **检查文件上传**：确保index.html在仓库根目录
+3. **尝试其他浏览器**：切换到Chrome、Firefox或Edge
+4. **等待处理**：如果显示"Your GitHub Pages site is currently being built..."，说明网站正在构建中
+5. **检查网址**：即使保存按钮不可点击，有时网站仍然会自动部署，尝试直接访问`https://您的用户名.github.io/future-fighter/`
+
+#### 6. 更新游戏
+每次修改游戏后：
+1. 提交更改：
+   ```
+   git add .
+   git commit -m "更新说明"
+   git push
+   ```
+2. GitHub Pages会自动更新您的游戏网站
+
+#### 7. 分享游戏
+部署成功后，您可以：
+1. 分享游戏URL给朋友和家人
+2. 将URL添加到您的简历或作品集
+3. 在社交媒体上分享您的游戏 
